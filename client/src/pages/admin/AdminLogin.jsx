@@ -1,26 +1,39 @@
-import React from "react";
+import { useInputValidation } from "6pp";
 import {
+  Button,
   Container,
   Paper,
-  Typography,
   TextField,
-  Button,
+  Typography
 } from "@mui/material";
-import {Navigate} from 'react-router-dom'
-import { useInputValidation } from "6pp";
-const isAdmin = true;
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+import { bgGradient } from "../../constants/color";
+import { adminLogin, getAdmin } from "../../redux/thunks/admin";
+
 const AdminLogin = () => {
+  const { isAdmin } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+
   const secretKey = useInputValidation("");
+
   const submitHandler = (e) => {
     e.preventDefault();
-    console.log("submit");
-    };
-    if(isAdmin) return <Navigate to="/admin/dashboard" />
+    dispatch(adminLogin(secretKey.value));
+  };
+
+  useEffect(() => {
+    dispatch(getAdmin());
+  }, [dispatch]);
+
+  if (isAdmin) return <Navigate to="/admin/dashboard" />;
+
   return (
     <div
       style={{
-        backgroundImage:
-          "linear-gradient(rgb(119 3 3 / 50%), rgb(26 4 255 / 50%))",
+        backgroundImage: bgGradient,
       }}
     >
       <Container
@@ -42,31 +55,37 @@ const AdminLogin = () => {
             alignItems: "center",
           }}
         >
-              <Typography variant="h5">Admin Login</Typography>
-              <form
-                style={{ width: "100%", marginTop: "1rem" }}
-                onSubmit={submitHandler}
-              >
-                <TextField
-                  required
-                  fullWidth
-                  label="Secret Key"
-                  type="password"
-                  margin="normal"
-                  variant="outlined"
-                  alue={secretKey.value}
-                  onChange={secretKey.changeHandler}
-                />
-                <Button
-                  sx={{ marginTop: "1rem" }}
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  fullWidth
-                >
-                  Login
-                </Button>
-              </form>
+          <Typography variant="h5">Admin Login</Typography>
+          <form
+            style={{
+              width: "100%",
+              marginTop: "1rem",
+            }}
+            onSubmit={submitHandler}
+          >
+            <TextField
+              required
+              fullWidth
+              label="Secret Key"
+              type="password"
+              margin="normal"
+              variant="outlined"
+              value={secretKey.value}
+              onChange={secretKey.changeHandler}
+            />
+
+            <Button
+              sx={{
+                marginTop: "1rem",
+              }}
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+            >
+              Login
+            </Button>
+          </form>
         </Paper>
       </Container>
     </div>

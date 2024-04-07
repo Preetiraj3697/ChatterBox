@@ -1,48 +1,129 @@
-import { useState } from "react";
+import { useFileHandler, useInputValidation } from "6pp";
+import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
 import {
-  Container,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Stack,
   Avatar,
+  Button,
+  Container,
   IconButton,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { useInputValidation, useStrongPassword, useFileHandler } from "6pp";
-import { VisuallyHideenInput } from "../components/styles/StyledComponents";
+import axios from "axios";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { VisuallyHiddenInput } from "../components/styles/StyledComponents";
+import { bgGradient } from "../constants/color";
+import { server } from "../constants/config";
+import { userExists } from "../redux/reducers/auth";
 import { usernameValidator } from "../utils/validators";
+
 const Login = () => {
-  const [isLoggin, setIsLoggin] = useState(true);
-  const toggleLogin = () => setIsLoggin((prev) => !prev);
+  const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toggleLogin = () => setIsLogin((prev) => !prev);
+
   const name = useInputValidation("");
   const bio = useInputValidation("");
   const username = useInputValidation("", usernameValidator);
-  // const password = useStrongPassword();
   const password = useInputValidation("");
+
   const avatar = useFileHandler("single");
-  const handleLogin = (e) => {
+
+  const dispatch = useDispatch();
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    const toastId = toast.loading("Logging In...");
+
+    setIsLoading(true);
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/login`,
+        {
+          username: username.value,
+          password: password.value,
+        },
+        config
+      );
+      dispatch(userExists(data.user));
+      toast.success(data.message, {
+        id: toastId,
+      });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something Went Wrong", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const handleSignup = (e) => {
+
+  const handleSignUp = async (e) => {
     e.preventDefault();
+
+    const toastId = toast.loading("Signing Up...");
+    setIsLoading(true);
+
+    const formData = new FormData();
+    formData.append("avatar", avatar.file);
+    formData.append("name", name.value);
+    formData.append("bio", bio.value);
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/new`,
+        formData,
+        config
+      );
+
+      dispatch(userExists(data.user));
+      toast.success(data.message, {
+        id: toastId,
+      });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something Went Wrong", {
+        id: toastId,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <div
       style={{
-              backgroundImage: "linear-gradient(rgb(119 3 3 / 50%), rgb(26 4 255 / 50%))",
+        backgroundImage: bgGradient,
       }}
     >
       <Container
         component={"main"}
         maxWidth="xs"
         sx={{
-            height: "100vh",
-            display: "flex",
-            justifyContent: "center",
-          alignItems:"center",
-          
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Paper
@@ -54,11 +135,14 @@ const Login = () => {
             alignItems: "center",
           }}
         >
-          {isLoggin ? (
+          {isLogin ? (
             <>
               <Typography variant="h5">Login</Typography>
               <form
-                style={{ width: "100%", marginTop: "1rem" }}
+                style={{
+                  width: "100%",
+                  marginTop: "1rem",
+                }}
                 onSubmit={handleLogin}
               >
                 <TextField
@@ -67,9 +151,10 @@ const Login = () => {
                   label="Username"
                   margin="normal"
                   variant="outlined"
-                  alue={username.value}
+                  value={username.value}
                   onChange={username.changeHandler}
                 />
+
                 <TextField
                   required
                   fullWidth
@@ -77,28 +162,34 @@ const Login = () => {
                   type="password"
                   margin="normal"
                   variant="outlined"
-                  alue={password.value}
+                  value={password.value}
                   onChange={password.changeHandler}
                 />
+
                 <Button
-                  sx={{ marginTop: "1rem" }}
+                  sx={{
+                    marginTop: "1rem",
+                  }}
                   variant="contained"
                   color="primary"
                   type="submit"
                   fullWidth
+                  disabled={isLoading}
                 >
                   Login
                 </Button>
+
                 <Typography textAlign={"center"} m={"1rem"}>
-                  Or
+                  OR
                 </Typography>
+
                 <Button
-                  variant="text"
-                  color="primary" 
+                  disabled={isLoading}
                   fullWidth
+                  variant="text"
                   onClick={toggleLogin}
                 >
-                  Sign Up
+                  Sign Up Instead
                 </Button>
               </form>
             </>
@@ -106,8 +197,11 @@ const Login = () => {
             <>
               <Typography variant="h5">Sign Up</Typography>
               <form
-                style={{ width: "100%", marginTop: "1rem",height:"80%" }}
-                onSubmit={handleSignup}
+                style={{
+                  width: "100%",
+                  marginTop: "1rem",
+                }}
+                onSubmit={handleSignUp}
               >
                 <Stack position={"relative"} width={"10rem"} margin={"auto"}>
                   <Avatar
@@ -134,13 +228,14 @@ const Login = () => {
                   >
                     <>
                       <CameraAltIcon />
-                      <VisuallyHideenInput
+                      <VisuallyHiddenInput
                         type="file"
                         onChange={avatar.changeHandler}
                       />
                     </>
                   </IconButton>
                 </Stack>
+
                 {avatar.error && (
                   <Typography
                     m={"1rem auto"}
@@ -162,6 +257,7 @@ const Login = () => {
                   value={name.value}
                   onChange={name.changeHandler}
                 />
+
                 <TextField
                   required
                   fullWidth
@@ -180,11 +276,13 @@ const Login = () => {
                   value={username.value}
                   onChange={username.changeHandler}
                 />
+
                 {username.error && (
                   <Typography color="error" variant="caption">
                     {username.error}
                   </Typography>
                 )}
+
                 <TextField
                   required
                   fullWidth
@@ -195,27 +293,28 @@ const Login = () => {
                   value={password.value}
                   onChange={password.changeHandler}
                 />
-                {password.error && (
-                  <Typography color="error" variant="caption">
-                    {password.error}
-                  </Typography>
-                )}
+
                 <Button
-                  sx={{ marginTop: "1rem" }}
+                  sx={{
+                    marginTop: "1rem",
+                  }}
                   variant="contained"
                   color="primary"
                   type="submit"
                   fullWidth
+                  disabled={isLoading}
                 >
                   Sign Up
                 </Button>
+
                 <Typography textAlign={"center"} m={"1rem"}>
-                  Or
+                  OR
                 </Typography>
+
                 <Button
-                  variant="text"
-                  color="primary"
+                  disabled={isLoading}
                   fullWidth
+                  variant="text"
                   onClick={toggleLogin}
                 >
                   Login Instead
@@ -228,4 +327,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;
