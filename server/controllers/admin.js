@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { TryCatch } from "../middlewares/error.js";
+import { TryCatch } from "../middlerwares/error.js";
 import { Chat } from "../models/chat.js";
 import { Message } from "../models/message.js";
 import { User } from "../models/user.js";

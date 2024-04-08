@@ -1,7 +1,7 @@
 import express from "express";
 import { connectDB } from "./utils/features.js";
 import dotenv from "dotenv";
-import { errorMiddleware } from "./middlewares/error.js";
+import { errorMiddleware } from "./middlerwares/error.js";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -20,7 +20,7 @@ import {
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
 import { corsOptions } from "./constants/config.js";
-import { socketAuthenticator } from "./middlewares/auth.js";
+import { socketAuthenticator } from "./middlerwares/auth.js";
 
 import userRoute from "./routes/user.js";
 import chatRoute from "./routes/chat.js";
@@ -33,7 +33,7 @@ dotenv.config({
 const mongoURI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
 const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
-const adminSecretKey = process.env.ADMIN_SECRET_KEY || "adsasdsdfsdfsdfd";
+const adminSecretKey = process.env.ADMIN_SECRET_KEY || "preetiraj1234";
 const userSocketIDs = new Map();
 const onlineUsers = new Set();
 

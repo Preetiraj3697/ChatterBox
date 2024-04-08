@@ -21,8 +21,8 @@ import {
   sendAttachmentsValidator,
   validateHandler,
 } from "../lib/validators.js";
-import { isAuthenticated } from "../middlewares/auth.js";
-import { attachmentsMulter } from "../middlewares/multer.js";
+import { isAuthenticated } from "../middlerwares/auth.js";
+import { attachmentsMulter } from "../middlerwares/multer.js";
 
 const app = express.Router();
 

@@ -1,7 +1,7 @@
 import { compare } from "bcrypt";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 import { getOtherMember } from "../lib/helper.js";
-import { TryCatch } from "../middlewares/error.js";
+import { TryCatch } from "../middlerwares/error.js";
 import { Chat } from "../models/chat.js";
 import { Request } from "../models/request.js";
 import { User } from "../models/user.js";

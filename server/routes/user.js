@@ -17,8 +17,8 @@ import {
   sendRequestValidator,
   validateHandler,
 } from "../lib/validators.js";
-import { isAuthenticated } from "../middlewares/auth.js";
-import { singleAvatar } from "../middlewares/multer.js";
+import {isAuthenticated} from "../middlerwares/auth.js";
+import { singleAvatar } from "../middlerwares/multer.js";
 
 const app = express.Router();
 

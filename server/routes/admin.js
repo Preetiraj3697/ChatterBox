@@ -9,7 +9,7 @@ import {
   getDashboardStats,
 } from "../controllers/admin.js";
 import { adminLoginValidator, validateHandler } from "../lib/validators.js";
-import { adminOnly } from "../middlewares/auth.js";
+import { adminOnly } from "../middlerwares/auth.js";
 
 const app = express.Router();
 
