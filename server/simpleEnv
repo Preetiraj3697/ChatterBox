@@ -1,0 +1,8 @@
+MONGO_URI=mongodb+srv://anythingyourmongodbaltasname@cluster0.ec2rlio.mongodb.net/
+JWT_SECRET=asdjflkdsjflksjdkf
+ADMIN_SECRET_KEY=anything
+NODE_ENV = anything you want
+CLIENT_URL =
+CLOUDINARY_CLOUD_NAME=your Cloudinary name
+CLOUDINARY_API_KEY=your api key
+CLOUDINARY_API_SECRET=your api secret
